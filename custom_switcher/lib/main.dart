@@ -1,125 +1,241 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+
+import 'widget/widget.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
+const dayColor = Color(0xFFd56352);
+const nightColor = Color(0xFF1e2230);
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Day Night Switch',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+        primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+  const MyHomePage({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  MyHomePageState createState() => MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class MyHomePageState extends State<MyHomePage>
+    with SingleTickerProviderStateMixin {
+  bool val = false;
+  late AnimationController _controller;
+  late Size size;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      lowerBound: 0.5,
+      duration: const Duration(seconds: 5),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+    size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
+      backgroundColor: const Color(0xFF414a4c),
+      body: AnimatedContainer(
+        color: val ? nightColor : dayColor,
+        duration: const Duration(milliseconds: 300),
+        child: Stack(
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+            ..._buildStars(20),
+            Positioned(
+              bottom: 0,
+              right: 0,
+              left: 0,
+              height: 200,
+              child: Opacity(
+                opacity: val ? 0 : 1.0,
+                child: Image.asset(
+                  'assets/cloud.png',
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+            Positioned(
+              bottom: 0,
+              right: 0,
+              height: 200,
+              child: Image.asset(
+                val ? 'assets/mountain2_night.png' : 'assets/mountain2.png',
+                fit: BoxFit.cover,
+              ),
+            ),
+            Positioned(
+              bottom: -10,
+              left: 0,
+              right: 0,
+              height: 140,
+              child: Image.asset(
+                val ? 'assets/mountain_night.png' : 'assets/mountain1.png',
+                fit: BoxFit.cover,
+              ),
+            ),
+            AnimatedBuilder(
+              animation: _controller,
+              builder: (context, child) {
+                return Stack(
+                  children: <Widget>[
+                    Positioned(
+                      bottom: -20,
+                      right: 0,
+                      left: 0,
+                      child: Transform.translate(
+                        offset: Offset(50 * _controller.value, 0),
+                        child: Opacity(
+                          opacity: val ? 0.0 : 0.8,
+                          child: Image.asset(
+                            'assets/cloud2.png',
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: -20,
+                      right: 0,
+                      left: 0,
+                      child: Transform.translate(
+                        offset: Offset(100 * _controller.value, 0),
+                        child: Opacity(
+                          opacity: val ? 0.0 : 0.4,
+                          child: Image.asset(
+                            'assets/cloud3.png',
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+            // _buildSun(),
+            Center(
+              child: CustomDayNightSwitch(
+                value: val,
+                moonImage: const AssetImage('assets/moon.png'),
+                onChanged: (value) {
+                  setState(() {
+                    val = value;
+                  });
+                },
+              ),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
+      floatingActionButton: Transform.translate(
+        offset: const Offset(160, -360),
+        child: _buildSun(),
+      ),
+    );
+  }
+
+  Widget _buildSun() {
+    return SizedBox(
+      width: double.maxFinite,
+      height: double.maxFinite,
+      child: AnimatedBuilder(
+        animation:
+            CurvedAnimation(parent: _controller, curve: Curves.fastOutSlowIn),
+        builder: (context, child) {
+          return Stack(
+            alignment: Alignment.center,
+            children: <Widget>[
+              _buildContainer(400 * _controller.value),
+              _buildContainer(500 * _controller.value),
+              _buildContainer(600 * _controller.value),
+              SizedBox(
+                width: 256,
+                height: 256,
+                child: val
+                    ? Image.asset('assets/moon.png')
+                    : const CircleAvatar(
+                        backgroundColor: Color(0xFFFDB813),
+                      ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildContainer(double radius) {
+    return Container(
+      width: radius,
+      height: radius,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: (val ? Colors.amber[100] : Colors.orangeAccent)
+            ?.withOpacity(1 - _controller.value),
+      ),
+    );
+  }
+
+  List<Widget> _buildStars(int starCount) {
+    List<Widget> stars = [];
+    for (int i = 0; i < starCount; i++) {
+      stars.add(_buildStar(top: randomX, left: randomY, val: val));
+    }
+    return stars;
+  }
+
+  double get randomX {
+    int maxX = (size.height).toInt();
+    return Random().nextInt(maxX).toDouble();
+  }
+
+  double get randomY {
+    int maxY = (size.width).toInt();
+    return Random().nextInt(maxY).toDouble();
+  }
+
+  Widget _buildStar({
+    double top = 0,
+    double left = 0,
+    bool val = false,
+  }) {
+    return Positioned(
+      top: top,
+      left: left,
+      child: Opacity(
+        opacity: val ? 1 : 0,
+        child: const CircleAvatar(
+          radius: 2,
+          backgroundColor: Colors.white,
+        ),
+      ),
     );
   }
 }
