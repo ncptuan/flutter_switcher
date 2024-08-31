@@ -130,14 +130,13 @@ class _CustomDayNightSwitchState extends State<CustomDayNightSwitch>
 
     final SwitchThemeData switchTheme = SwitchTheme.of(context);
 
-    final MaterialStateProperty<MouseCursor> effectiveMouseCursor =
-        MaterialStateProperty.resolveWith<MouseCursor>(
-            (Set<MaterialState> states) {
-      return MaterialStateProperty.resolveAs<MouseCursor?>(
+    final WidgetStateProperty<MouseCursor> effectiveMouseCursor =
+        WidgetStateProperty.resolveWith<MouseCursor>((Set<WidgetState> states) {
+      return WidgetStateProperty.resolveAs<MouseCursor?>(
               widget.mouseCursor, states) ??
           switchTheme.mouseCursor?.resolve(states) ??
-          MaterialStateProperty.resolveAs<MouseCursor>(
-              MaterialStateMouseCursor.clickable, states);
+          WidgetStateProperty.resolveAs<MouseCursor>(
+              WidgetStateMouseCursor.clickable, states);
     });
 
     return Semantics(
@@ -161,8 +160,8 @@ class _CustomDayNightSwitchState extends State<CustomDayNightSwitch>
             ..hoverColor = Colors.pink
             ..focusColor = Colors.green
             ..splashRadius = kRadialReactionRadius
-            ..isFocused = states.contains(MaterialState.focused)
-            ..isHovered = states.contains(MaterialState.hovered)
+            ..isFocused = states.contains(WidgetState.focused)
+            ..isHovered = states.contains(WidgetState.hovered)
             ..activeColor = Colors.yellow
             ..inactiveColor = Colors.yellow
             ..sunImage = widget.sunImage
@@ -326,7 +325,7 @@ class _DayNightSwitchPainter extends ToggleablePainter {
 
     final Offset trackPaintOffset =
         _computeTrackPaintOffset(size, _kTrackWidth, _kTrackHeight);
-    final double thumbRadius = _kThumbRadius;
+    const double thumbRadius = _kThumbRadius;
     final Offset thumbPaintOffset =
         _computeThumbPaintOffset(trackPaintOffset, visualPosition, thumbRadius);
     final Offset radialReactionOrigin =
@@ -457,7 +456,7 @@ class _DayNightSwitchPainter extends ToggleablePainter {
 
       thumbPainter.paint(
         canvas,
-        thumbPaintOffset - Offset(0, 0),
+        thumbPaintOffset - const Offset(0, 0),
         configuration.copyWith(size: Size.fromRadius(radius)),
       );
 
