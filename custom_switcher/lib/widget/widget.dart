@@ -1,1 +1,1 @@
-export 'custom_day_night_switch.dart';
+export 'planet_switcher_widget/planet_switcher_widget.dart';

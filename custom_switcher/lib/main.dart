@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:custom_switcher/helper/build_start_helper.dart';
 import 'package:flutter/material.dart';
 
 import 'widget/widget.dart';
@@ -66,7 +67,8 @@ class MyHomePageState extends State<MyHomePage>
         duration: const Duration(milliseconds: 300),
         child: Stack(
           children: <Widget>[
-            ..._buildStars(20),
+            ...BuildStartHelper.buildStars(
+                starCount: 20, deviceSize: size, isNight: val),
             Positioned(
               bottom: 0,
               right: 0,
@@ -143,6 +145,7 @@ class MyHomePageState extends State<MyHomePage>
               child: CustomDayNightSwitch(
                 value: val,
                 moonImage: const AssetImage('assets/moon.png'),
+                sunImage: const AssetImage('assets/sun.png'),
                 onChanged: (value) {
                   setState(() {
                     val = value;
@@ -156,84 +159,8 @@ class MyHomePageState extends State<MyHomePage>
       floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
       floatingActionButton: Transform.translate(
         offset: const Offset(160, -360),
-        child: _buildSun(),
-      ),
-    );
-  }
-
-  Widget _buildSun() {
-    return SizedBox(
-      width: double.maxFinite,
-      height: double.maxFinite,
-      child: AnimatedBuilder(
-        animation:
-            CurvedAnimation(parent: _controller, curve: Curves.fastOutSlowIn),
-        builder: (context, child) {
-          return Stack(
-            alignment: Alignment.center,
-            children: <Widget>[
-              _buildContainer(400 * _controller.value),
-              _buildContainer(500 * _controller.value),
-              _buildContainer(600 * _controller.value),
-              SizedBox(
-                width: 256,
-                height: 256,
-                child: val
-                    ? Image.asset('assets/moon.png')
-                    : const CircleAvatar(
-                        backgroundColor: Color(0xFFFDB813),
-                      ),
-              ),
-            ],
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildContainer(double radius) {
-    return Container(
-      width: radius,
-      height: radius,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: (val ? Colors.amber[100] : Colors.orangeAccent)
-            ?.withOpacity(1 - _controller.value),
-      ),
-    );
-  }
-
-  List<Widget> _buildStars(int starCount) {
-    List<Widget> stars = [];
-    for (int i = 0; i < starCount; i++) {
-      stars.add(_buildStar(top: randomX, left: randomY, val: val));
-    }
-    return stars;
-  }
-
-  double get randomX {
-    int maxX = (size.height).toInt();
-    return Random().nextInt(maxX).toDouble();
-  }
-
-  double get randomY {
-    int maxY = (size.width).toInt();
-    return Random().nextInt(maxY).toDouble();
-  }
-
-  Widget _buildStar({
-    double top = 0,
-    double left = 0,
-    bool val = false,
-  }) {
-    return Positioned(
-      top: top,
-      left: left,
-      child: Opacity(
-        opacity: val ? 1 : 0,
-        child: const CircleAvatar(
-          radius: 2,
-          backgroundColor: Colors.white,
+        child: PlanetWidget(
+          isSun: !val,
         ),
       ),
     );
