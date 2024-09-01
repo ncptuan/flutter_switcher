@@ -1,24 +1,25 @@
+import 'package:custom_switcher/constant.dart';
 import 'package:custom_switcher/widget/widget.dart';
 import 'package:flutter/material.dart';
 
-import 'aura_widget.dart';
+import '../../style/style.dart';
 
 const double _kTrackHeight = 80.0;
 const double _kTrackWidth = 180.0;
-const double _kTrackRadius = _kTrackHeight / 2.0;
-const double _kThumbRadius = 36.0;
-const double _kSwitchMinSize = kMinInteractiveDimension - 8.0;
-// const double _kSwitchWidth = _kTrackWidth - 2 * _kTrackRadius + _kSwitchMinSize;
-// const double _kSwitchHeight = _kSwitchMinSize + 8.0;
-const double _kSwitchWidth = _kTrackHeight - 5;
-const double _kSwitchHeight = _kTrackHeight - 5;
 
 class PlanetSwitchWidget extends StatefulWidget {
   final bool value;
+  final double width;
+  final double height;
   final ValueChanged<bool> onChanged;
 
-  const PlanetSwitchWidget(
-      {super.key, required this.value, required this.onChanged});
+  const PlanetSwitchWidget({
+    super.key,
+    required this.value,
+    required this.onChanged,
+    this.width = _kTrackWidth,
+    this.height = _kTrackHeight,
+  });
 
   @override
   _PlanetSwitchWidgetState createState() => _PlanetSwitchWidgetState();
@@ -34,9 +35,7 @@ class _PlanetSwitchWidgetState extends State<PlanetSwitchWidget>
     super.initState();
 
     _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 1),
-    );
+        vsync: this, duration: Constants.switchAnimationDuration);
 
     _circleAnimation = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
       parent: _animationController,
@@ -46,6 +45,8 @@ class _PlanetSwitchWidgetState extends State<PlanetSwitchWidget>
 
   @override
   Widget build(BuildContext context) {
+    double kTrackRadius = widget.height / 2.0;
+    double kSwitchWidth = widget.height - 5;
     return AnimatedBuilder(
       animation: _circleAnimation,
       builder: (context, child) {
@@ -61,15 +62,15 @@ class _PlanetSwitchWidgetState extends State<PlanetSwitchWidget>
           },
           child: ClipRRect(
             clipBehavior: Clip.antiAlias,
-            borderRadius: BorderRadius.circular(_kTrackRadius),
+            borderRadius: BorderRadius.circular(kTrackRadius),
             child: AnimatedContainer(
-              duration: Duration(seconds: 1),
-              width: _kTrackWidth,
-              height: _kTrackHeight,
+              duration: Constants.switchAnimationDuration,
+              width: widget.width,
+              height: widget.height,
               decoration: BoxDecoration(
                 color: widget.value
-                    ? const Color(0xff2F2F2F)
-                    : const Color(0xff2384BA),
+                    ? MyColors.nightSwitchBackgroundColor
+                    : MyColors.daySwitchBackgroundColor,
                 image: DecorationImage(
                   image: ExactAssetImage(
                     widget.value
@@ -84,31 +85,17 @@ class _PlanetSwitchWidgetState extends State<PlanetSwitchWidget>
                   Positioned(
                     top: 0,
                     bottom: 0,
-                    left: handlePlanetPosition(),
+                    left: handlePlanetPosition(switchButtonWidth: kSwitchWidth),
                     child: Container(
                       key: UniqueKey(),
-                      width: _kSwitchWidth,
-                      height: _kSwitchHeight,
-                      margin: const EdgeInsets.all(4),
+                      width: kSwitchWidth,
+                      height: kSwitchWidth,
+                      margin: const EdgeInsets.all(Dimens.switchButtonSpacing),
                       child: Container(
                         decoration: BoxDecoration(
-                          borderRadius:
-                              BorderRadius.circular(_kTrackRadius * 2),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.white.withOpacity(0.3),
-                              spreadRadius: 10,
-                            ),
-                            BoxShadow(
-                              color: Colors.white.withOpacity(0.1),
-                              spreadRadius: 30,
-                            ),
-                            BoxShadow(
-                              color: Colors.white.withOpacity(0.05),
-                              spreadRadius: 45,
-                            ),
-                          ],
-                        ),
+                            borderRadius:
+                                BorderRadius.circular(kTrackRadius * 2),
+                            boxShadow: Dimens.switchButtonAura),
                         child: const PlanetWidget(
                           isSun: true,
                           isTurnOffAura: true,
@@ -119,15 +106,17 @@ class _PlanetSwitchWidgetState extends State<PlanetSwitchWidget>
                   Positioned(
                     top: 0,
                     bottom: 0,
-                    left: handlePlanetPosition(),
+                    left: handlePlanetPosition(switchButtonWidth: kSwitchWidth),
                     child: Visibility(
                       visible: _circleAnimation.value > 0.5 ? true : false,
                       child: Opacity(
                         opacity: _circleAnimation.value,
                         child: Container(
-                          width: _kSwitchWidth,
-                          height: _kSwitchHeight,
-                          margin: const EdgeInsets.all(4),
+                          key: UniqueKey(),
+                          width: kSwitchWidth,
+                          height: kSwitchWidth,
+                          margin:
+                              const EdgeInsets.all(Dimens.switchButtonSpacing),
                           child: const PlanetWidget(
                             isSun: false,
                             isTurnOffAura: true,
@@ -145,9 +134,11 @@ class _PlanetSwitchWidgetState extends State<PlanetSwitchWidget>
     );
   }
 
-  double handlePlanetPosition({bool? isMoon}) {
+  double handlePlanetPosition(
+      {bool? isMoon, required double switchButtonWidth}) {
     double position = 0;
-    position = ((_kTrackWidth - _kSwitchWidth - 8) * _circleAnimation.value);
+    position =
+        ((widget.width - switchButtonWidth - 8) * _circleAnimation.value);
     return position;
   }
 }

@@ -1,3 +1,4 @@
+import 'package:custom_switcher/style/style.dart';
 import 'package:flutter/material.dart';
 
 class AuraWidget extends StatelessWidget {
@@ -14,13 +15,12 @@ class AuraWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Container(
       width: radius,
       height: radius,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: (auraColor ?? Colors.orangeAccent)
+        color: (auraColor ?? MyColors.sunAuraColor)
             .withOpacity(1 - (currentAnimationValue ?? 0)),
       ),
     );

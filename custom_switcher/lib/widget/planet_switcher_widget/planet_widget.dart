@@ -1,5 +1,8 @@
+import 'package:custom_switcher/constant.dart';
 import 'package:custom_switcher/widget/planet_switcher_widget/aura_widget.dart';
 import 'package:flutter/material.dart';
+
+import '../../style/style.dart';
 
 class PlanetWidget extends StatefulWidget {
   final bool? isSun;
@@ -29,10 +32,8 @@ class _PlanetWidgetState extends State<PlanetWidget>
     super.initState();
 
     _controller = AnimationController(
-      vsync: this,
-      lowerBound: 0.5,
-      duration: const Duration(seconds: 5),
-    )..repeat();
+        vsync: this, duration: Constants.auraAnimationDuration)
+      ..repeat();
   }
 
   @override
@@ -43,50 +44,55 @@ class _PlanetWidgetState extends State<PlanetWidget>
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.maxFinite,
-      height: double.maxFinite,
-      child: AnimatedBuilder(
-        animation:
-            CurvedAnimation(parent: _controller, curve: Curves.fastOutSlowIn),
-        builder: (context, child) {
-          return widget.isTurnOffAura
-              ? SizedBox(
-                  width: 256,
-                  height: 256,
-                  child: (widget.isSun ?? false)
-                      ? Image.asset('assets/sun.png')
-                      : Image.asset('assets/moon.png'),
-                )
-              : Stack(
+    return widget.isTurnOffAura
+        ? SizedBox(
+            width: Dimens.size256,
+            height: Dimens.size256,
+            child: (widget.isSun ?? false)
+                ? Image.asset('assets/sun.png')
+                : Image.asset('assets/moon.png'),
+          )
+        : SizedBox(
+            width: double.maxFinite,
+            height: double.maxFinite,
+            child: AnimatedBuilder(
+              animation: CurvedAnimation(
+                  parent: _controller, curve: Curves.fastOutSlowIn),
+              builder: (context, child) {
+                return Stack(
                   alignment: Alignment.center,
                   children: <Widget>[
                     AuraWidget(
                       radius: (widget.listAura?[0] ?? 400) * _controller.value,
                       currentAnimationValue: _controller.value,
-                      auraColor: (widget.isSun ?? false) ? null : Colors.white,
+                      auraColor:
+                          (widget.isSun ?? false) ? null : MyColors.whiteColor,
                     ),
                     AuraWidget(
-                      radius: (widget.listAura?[1] ?? 500) * _controller.value,
-                      currentAnimationValue: _controller.value,
-                      auraColor: (widget.isSun ?? false) ? null : Colors.white,
-                    ),
+                        radius:
+                            (widget.listAura?[1] ?? 500) * _controller.value,
+                        currentAnimationValue: _controller.value,
+                        auraColor: (widget.isSun ?? false)
+                            ? null
+                            : MyColors.whiteColor),
                     AuraWidget(
-                      radius: (widget.listAura?[2] ?? 600) * _controller.value,
-                      currentAnimationValue: _controller.value,
-                      auraColor: (widget.isSun ?? false) ? null : Colors.white,
-                    ),
+                        radius:
+                            (widget.listAura?[2] ?? 600) * _controller.value,
+                        currentAnimationValue: _controller.value,
+                        auraColor: (widget.isSun ?? false)
+                            ? null
+                            : MyColors.whiteColor),
                     SizedBox(
-                      width: 256,
-                      height: 256,
+                      width: Dimens.size256,
+                      height: Dimens.size256,
                       child: (widget.isSun ?? false)
                           ? Image.asset('assets/sun.png')
                           : Image.asset('assets/moon.png'),
                     ),
                   ],
                 );
-        },
-      ),
-    );
+              },
+            ),
+          );
   }
 }
