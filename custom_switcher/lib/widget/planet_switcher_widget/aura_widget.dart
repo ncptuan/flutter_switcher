@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 class AuraWidget extends StatelessWidget {
   final double? radius;
   final double? currentAnimationValue;
-  final Color? planetColor;
+  final Color? auraColor;
 
   const AuraWidget({
     super.key,
     this.radius,
     this.currentAnimationValue,
-    this.planetColor,
+    this.auraColor,
   });
 
   @override
@@ -20,7 +20,7 @@ class AuraWidget extends StatelessWidget {
       height: radius,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: (planetColor ?? Colors.orangeAccent)
+        color: (auraColor ?? Colors.orangeAccent)
             .withOpacity(1 - (currentAnimationValue ?? 0)),
       ),
     );

@@ -3,9 +3,17 @@ import 'package:flutter/material.dart';
 
 class PlanetWidget extends StatefulWidget {
   final bool? isSun;
+  final List<double>? listAura;
+  final bool isTurnOffAura;
   const PlanetWidget({
     super.key,
     this.isSun,
+    this.listAura = const [
+      400.0,
+      500.0,
+      600.0,
+    ],
+    this.isTurnOffAura = false,
   });
 
   @override
@@ -42,30 +50,41 @@ class _PlanetWidgetState extends State<PlanetWidget>
         animation:
             CurvedAnimation(parent: _controller, curve: Curves.fastOutSlowIn),
         builder: (context, child) {
-          return Stack(
-            alignment: Alignment.center,
-            children: <Widget>[
-              AuraWidget(
-                radius: 400 * _controller.value,
-                currentAnimationValue: _controller.value,
-              ),
-              AuraWidget(
-                radius: 500 * _controller.value,
-                currentAnimationValue: _controller.value,
-              ),
-              AuraWidget(
-                radius: 600 * _controller.value,
-                currentAnimationValue: _controller.value,
-              ),
-              SizedBox(
-                width: 256,
-                height: 256,
-                child: (widget.isSun ?? false)
-                    ? Image.asset('assets/sun.png')
-                    : Image.asset('assets/moon.png'),
-              ),
-            ],
-          );
+          return widget.isTurnOffAura
+              ? SizedBox(
+                  width: 256,
+                  height: 256,
+                  child: (widget.isSun ?? false)
+                      ? Image.asset('assets/sun.png')
+                      : Image.asset('assets/moon.png'),
+                )
+              : Stack(
+                  alignment: Alignment.center,
+                  children: <Widget>[
+                    AuraWidget(
+                      radius: (widget.listAura?[0] ?? 400) * _controller.value,
+                      currentAnimationValue: _controller.value,
+                      auraColor: (widget.isSun ?? false) ? null : Colors.white,
+                    ),
+                    AuraWidget(
+                      radius: (widget.listAura?[1] ?? 500) * _controller.value,
+                      currentAnimationValue: _controller.value,
+                      auraColor: (widget.isSun ?? false) ? null : Colors.white,
+                    ),
+                    AuraWidget(
+                      radius: (widget.listAura?[2] ?? 600) * _controller.value,
+                      currentAnimationValue: _controller.value,
+                      auraColor: (widget.isSun ?? false) ? null : Colors.white,
+                    ),
+                    SizedBox(
+                      width: 256,
+                      height: 256,
+                      child: (widget.isSun ?? false)
+                          ? Image.asset('assets/sun.png')
+                          : Image.asset('assets/moon.png'),
+                    ),
+                  ],
+                );
         },
       ),
     );
